@@ -1,0 +1,152 @@
+#
+def exibir_menu():
+    print("\n--- Menu Principal ---")
+    print("1. Cadastrar Pessoa")
+    print("2. Listar Pessoas")
+    print("3. Buscar por CPF")
+    print("4. Alterar Dados")
+    print("5. Excluir Pessoa")
+    print("6. Sair")
+    print( )
+
+
+#
+def cadastrar(pessoas):
+    cpf = input("CPF: ")
+    nome = (input("Nome: "))
+    endereco = input("Endereço: ")
+    telefone = input("Telefone: ")
+    pessoas.append((cpf, nome, endereco, telefone))
+    print("Pessoa cadastrada com sucesso!")
+
+#
+def listar(pessoas):
+    if not pessoas:
+        print("Nenhuma pessoa cadastrada.")
+    else:
+        for cpf, nome, endereco, telefone in pessoas:
+            print(f"CPF: {cpf}, Nome: {nome}, Endereço: {endereco}, Telefone: {telefone}")
+
+#
+def buscar(pessoas):
+    cpf = input("CPF para buscar: ")
+    for pessoa in pessoas:
+        if pessoa[0] == cpf:
+            print(f"Nome: {pessoa[1]}, Endereço: {pessoa[2]}, Telefone: {pessoa[3]}, CPF: {pessoa[0]}")
+            return
+    print("Pessoa não encontrada.")
+
+#
+def alterar(pessoas):
+    cpf = input("CPF da pessoa a alterar: ")
+    for i, pessoa in enumerate(pessoas):
+        if pessoa[0] == cpf:
+            nome = (input("Novo nome: "))
+            endereco = input("Novo endereço: ")
+            telefone = input("Novo telefone: ")
+            confirmar = input("Confirmar alteração? (s/n): ").lower()
+            if confirmar == 's':
+                pessoas[i] = (cpf, nome, endereco, telefone)
+                print("Dados alterados com sucesso!")
+            return
+    print("Pessoa não encontrada.")
+
+# 
+def excluir(pessoas):
+    cpf = input("CPF para excluir: ")
+    for pessoa in pessoas:
+        if pessoa[0] == cpf:
+            print(f"Nome: {pessoa[1]}, Endereço: {pessoa[2]}, Telefone: {pessoa[3]}")
+            confirmar = input("Confirmar exclusão? (s/n): ").lower()
+            if confirmar == 's':
+                pessoas.remove(pessoa)
+                print("Pessoa excluída com sucesso!")
+            return
+    print("Pessoa não encontrada.")
+
+#
+def sistema_pessoas():
+    pessoas = []
+    while True:
+        exibir_menu()
+        opcao = input("Opção: ")
+        if opcao == "1":
+            cadastrar(pessoas)
+        elif opcao == "2":
+            listar(pessoas)
+        elif opcao == "3":
+            buscar(pessoas)
+        elif opcao == "4":
+            alterar(pessoas)
+        elif opcao == "5":
+            excluir(pessoas)
+        elif opcao == "6":
+            print("Saindo...")
+            break
+        else:
+            print("Opção inválida.")
+
+#
+def sistema_loterica():
+    clientes = []
+    apostas = []
+
+    while True:
+        print("\n--- Sistema Lotérica ---")
+        print("1. Cadastrar Cliente")
+        print("2. Registrar Aposta")
+        print("3. Ver Apostas por CPF")
+        print("4. Voltar ao Menu Principal")
+        print( )
+        opc = input("Opção: ")
+        print( )
+
+        if opc == "1":
+            cpf = input("CPF: ")
+            nome =(input("Nome: "))
+            tel = input("Telefone: ")
+            clientes.append((cpf, nome, tel))
+            print("Cliente cadastrado!")
+        elif opc == "2":
+            cpf = input("CPF do cliente: ")
+            tipo = input("Tipo de aposta (Mega, Quina...): ")
+            jogo = input("Número do jogo: ")
+            valor = input("Valor da aposta: ")
+            data = input("Data da aposta: ")
+            apostas.append((cpf, tipo, jogo, valor, data))
+            print("Aposta registrada.")
+        elif opc == "3": 
+            cpf = input("CPF: ")
+            encontrou = False
+            print(f"Apostas do cliente {cpf}:")
+            for a in apostas:
+                if a[0] == cpf:
+                    print(f"Tipo: {a[1]}, Jogo: {a[2]}, Valor: {a[3]}, Data: {a[4]}")
+                    encontrou = True
+            if not encontrou:
+                print("Nenhuma aposta encontrada!")       
+        elif opc == "4":
+            break
+        else:
+            print("Opção inválida.")
+
+#
+def main():
+    while True:
+        print("\n=== Sistema Geral ===")
+        print("1. Sistema de Pessoas")
+        print("2. Sistema Lotérica")
+        print("3. Sair")
+        escolha = input("Escolha: ")
+
+        if escolha == "1":
+            sistema_pessoas()
+        elif escolha == "2":
+            sistema_loterica()
+        elif escolha == "3":
+            print("Encerrando...")
+            break
+        else:
+            print("Opção inválida.")
+
+main()
