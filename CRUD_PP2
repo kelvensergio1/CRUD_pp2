@@ -1,3 +1,6 @@
+import json
+
+#json, para savar as informações
 def salvar_dados():
     """Salva todos os dados em arquivos JSON"""
     dados = {
@@ -5,14 +8,14 @@ def salvar_dados():
         'apostas': apostas,
         'proximo_id_aposta': proximo_id_aposta
     }
-    
+
     with open('dados_loteria.json', 'w') as f:
         json.dump(dados, f, indent=4)
 
 def carregar_dados():
     """Carrega dados dos arquivos JSON"""
     global clientes, apostas, proximo_id_aposta
-    
+
     try:
         with open('dados_loteria.json', 'r') as f:
             dados = json.load(f)
@@ -34,60 +37,64 @@ jogos = [
     ["LOTOF", "Lotofácil", 2000000]
 ]
 apostas = []
-# Usa um contador para IDs únicos das apostas
+# Usa um contador para IDs únicos das aposta
 proximo_id_aposta = 1
 
 
 # Validação do CPF #
 def validar_cpf(cpf_digitado):
     """Valida se o CPF tem 11 dígitos numéricos"""
-    cpf_limpo = ''.join([c for c in cpf_digitado if c.isdigit()])#filtra so os dados numericos do cpf
+    cpf_limpo = ''.join([c for c in cpf_digitado if c.isdigit()]) #filtra digitos numericos do imput
     return cpf_limpo if len(cpf_limpo) == 11 else False
 
-# ========== FUNÇÕES PRINCIPAIS ========== #
+#  FUNÇÕES PRINCIPAIS #
+
+#Cadastro do apostador
 def cadastrar_cliente():
     """Cadastra um novo cliente"""
     print("\n--- CADASTRAR CLIENTE ---")
-    
+
     while True:
         cpf = input("CPF (11 números): ")
         cpf_validado = validar_cpf(cpf)
-        
+
         if cpf_validado:
             if not any(cliente["cpf"] == cpf_validado for cliente in clientes):
                 break
             print("❌ CPF já cadastrado!")
         else:
             print("❌ CPF inválido! Digite 11 números.")
-    
+
     nome = input("Nome: ")
     telefone = input("Telefone: ")
-    
+
     clientes.append({"cpf": cpf_validado, "nome": nome, "telefone": telefone})
-    salvar_dados()  
+    salvar_dados()
     print(f"✅ Cliente {nome} cadastrado!")
 
+# Mostra as opções de apostas pro usuario
 def listar_jogos():
     """Lista todos os jogos disponíveis"""
     print("\n--- JOGOS DISPONÍVEIS ---")
     for jogo in jogos:
         print(f"{jogo[0]} - {jogo[1]} (Prêmio: R$ {jogo[2]:,})")
 
+#Registro das apostas
 def registrar_aposta():
     """Registra uma nova aposta"""
     global proximo_id_aposta
-    
+
     print("\n--- NOVA APOSTA ---")
-    
+
     if not clientes:
         print("❌ Cadastre clientes primeiro!")
         return
-    
+
     # Selecionar cliente
     print("Clientes:")
     for cliente in clientes:
         print(f"{cliente['cpf']} - {cliente['nome']}")
-    
+
     while True:
         cpf = input("\nCPF do cliente: ")
         cpf_validado = validar_cpf(cpf)
@@ -95,7 +102,7 @@ def registrar_aposta():
         if cliente:
             break
         print("❌ Cliente não encontrado!")
-    
+
     # Selecionar jogo
     listar_jogos()
     while True:
@@ -104,8 +111,8 @@ def registrar_aposta():
         if jogo:
             break
         print("❌ Jogo inválido!")
-    
-    # Valor da aposta
+
+    # quantia / valor da aposta
     while True:
         try:
             valor = float(input("Valor R$: "))
@@ -114,10 +121,10 @@ def registrar_aposta():
             print("❌ Valor deve ser positivo!")
         except:
             print("❌ Digite um número válido!")
-    
+
     data = input("Data (DD/MM/AAAA): ")
-    
-    # Adiciona aposta com um único ID
+
+    # para adicionar aposta com um único ID
     apostas.append({
         "id": proximo_id_aposta,
         "cpf": cpf_validado,
@@ -129,25 +136,26 @@ def registrar_aposta():
     print(f"✅ Aposta registrada! ID: {proximo_id_aposta}")
     proximo_id_aposta += 1
 
+#Buscar o apostador pelo CPF
 def buscar_apostador():
     """Busca apostador por CPF"""
     print("\n--- BUSCAR APOSTADOR ---")
-    
+
     while True:
         cpf = input("CPF: ")
         cpf_validado = validar_cpf(cpf)
         if cpf_validado:
             break
         print("❌ CPF inválido!")
-    
+
     cliente = next((c for c in clientes if c["cpf"] == cpf_validado), None)
     if not cliente:
         print("❌ Cliente não encontrado!")
         return
-    
+
     print(f"\nCliente: {cliente['nome']}")
     print("Apostas:")
-    
+
     apostas_cliente = [a for a in apostas if a["cpf"] == cpf_validado]
     if not apostas_cliente:
         print("Nenhuma aposta encontrada.")
@@ -156,21 +164,22 @@ def buscar_apostador():
             jogo = next(j for j in jogos if j[0] == aposta["jogo"])
             print(f"ID: {aposta['id']} | {jogo[1]} | R$ {aposta['valor']:.2f} | {aposta['data']}")
 
+#para conseguir desfazer ou excluir as apostas 
 def excluir_aposta():
     """Exclui uma aposta por ID"""
     print("\n--- EXCLUIR APOSTA ---")
-    
+
     if not apostas:
         print("❌ Nenhuma aposta cadastrada!")
         return
-    
+
     # Mostra todas as apostas
     print("Apostas registradas:")
     for aposta in apostas:
         cliente = next(c for c in clientes if c["cpf"] == aposta["cpf"])
         jogo = next(j for j in jogos if j[0] == aposta["jogo"])
         print(f"ID: {aposta['id']} | {cliente['nome']} | {jogo[1]} | R$ {aposta['valor']:.2f}")
-    
+
     while True:
         try:
             id_aposta = int(input("\nID da aposta para excluir: "))
@@ -189,7 +198,7 @@ def excluir_aposta():
         except:
             print("❌ Digite um número válido!")
 
-# ========== MENU PRINCIPAL ========== #
+# MENU PRINCIPAL #
 def menu_principal():
     """Menu do sistema"""
     while True:
@@ -200,9 +209,9 @@ def menu_principal():
         print("4. Buscar Apostador")
         print("5. Excluir Aposta")
         print("6. Sair")
-        
+
         opcao = input("Opção: ")
-        
+
         if opcao == "1":
             cadastrar_cliente()
         elif opcao == "2":
@@ -219,7 +228,7 @@ def menu_principal():
         else:
             print("❌ Opção inválida!")
 
-# ========== INÍCIO ========== #
+# INÍCIO #
 if __name__ == "__main__":
   carregar_dados()
   menu_principal()
